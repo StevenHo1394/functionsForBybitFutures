@@ -123,30 +123,37 @@ class bybit_future:
         return trade_quantity
         
 
-     #added the parm "order_price" in case of limit orders
-    def short_token_usdt(self, symbol="BTC", leverage=5, collateral=100, order_type='Market', order_price=0): 
+    def short_token_usdt(self, symbol="BTC", leverage=5, collateral=100, order_type='Market'): 
         
         asset = symbol + 'USDT'
         trade_quantity = self.get_trade_quantity(asset, collateral, leverage)
         
         #set leverage
         leverage_result, leverage_response = self.set_leverage(asset, leverage)
-        print("leverage_result=" + str(leverage_result))
             
         if not leverage_result:
+            print("bybit_future.long_token_usdt(), leverage_result =" + str(leverage_result))
             return False, leverage_response, ''
                 
         #short the asset
-        return self.trade(asset, 'Sell', order_type, order_price, trade_quantity)
+        return self.trade(asset, 'Sell', order_type, 0, trade_quantity)
         
 
-    #fixme: incomplete
-    # def long_token_usdt(self, symbol="BTC", leverage=5, collateral=100, order_type='Market', order_price=0): 
+    def long_token_usdt(self, symbol="BTC", leverage=5, collateral=100, order_type='Market'): 
         
-    #     asset = symbol + 'USDT'
-    #     trade_quantity = self.get_trade_quantity(asset, collateral, leverage)
+        asset = symbol + 'USDT'
+        trade_quantity = self.get_trade_quantity(asset, collateral, leverage)
         
-    #     return
+        #set leverage
+        leverage_result, leverage_response = self.set_leverage(asset, leverage)        
+            
+        if not leverage_result:
+            print("bybit_future.long_token_usdt(), leverage_result =" + str(leverage_result))
+            return False, leverage_response, ''
+        
+        #long the asset
+        return self.trade(asset, 'Buy', order_type, 0, trade_quantity)
+        
     
     # #fixme: incomplete
     # def close_position(self, position_id="ABC", order_type='Market', order_price=0):
@@ -159,22 +166,10 @@ if __name__ == '__main__':
     myBybitFut = bybit_future(testing=True) #testnet
     #myBybitFut = bybit_future(testing=False) #real
             
-    #get price
-    # result = myBybitFut.get_price('BTCUSDT')
-    # print(result)
     
-    #set leverage
-    # result, response = myBybitFut.set_leverage('BTCUSDT', 5)
-    # print(result)
-    
-    #get trade quantity
-    # result = myBybitFut.get_trade_quantity('BTCUSDT', 100, 5)
-    # print(result)
-    
-    #short future
-    # result, response, orderId = myBybitFut.short_token_usdt('BTC', 5, 100, order_type='Market')
-    # print(result)
-    # print(orderId)
+    #long future
+    result, response, orderId = myBybitFut.long_token_usdt('BTC', 5, 100, order_type='Market')
+    print(result)
     
     print('finished')
     
