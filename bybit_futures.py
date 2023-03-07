@@ -65,7 +65,7 @@ class bybit_future:
                     
         return result, response
     
-    def trade(self, asset, side, typ, price, quan):   
+    def trade(self, asset, side, typ, price, quan, reduce_only=False, close_on_trigger=False):   
         
         result = False  
         response = {}
@@ -79,9 +79,11 @@ class bybit_future:
                 qty = quan,
                 price = price,
                 time_in_force="GoodTillCancel",
-                reduce_only=False,
-                close_on_trigger=False
+                reduce_only=reduce_only,
+                close_on_trigger=close_on_trigger
             )
+            
+            print(response)
                     
             if ( response['ret_code'] == 0 ) and ( response['ext_code'] == "" ):
                 result = True
@@ -155,9 +157,27 @@ class bybit_future:
         return self.trade(asset, 'Buy', order_type, 0, trade_quantity)
         
     
-    # #fixme: incomplete
-    # def close_position(self, position_id="ABC", order_type='Market', order_price=0):
-    #     return
+    def close_position(self, symbol="BTC", position_id="ABC", order_type='Market'):        
+        asset = symbol + 'USDT'
+        position_response = self.session_auth.my_position()
+        
+        if ( 'ret_code' in position_response ) and ( position_response['ret_code'] == 0 ):
+            positions = position_response['result']
+            
+            for position in positions:
+                if asset == position['data']['symbol'] :
+                    if position_id == position['data']['position_idx']:
+                        quantity = position['data']['size']
+                        
+                        print(asset)
+                        print(position_id)
+                        
+                        if 'Buy' == position['data']['side']:
+                            return self.trade(asset, 'Sell', order_type, 0, quantity, True, True)                        
+                        else:
+                            return self.trade(asset, 'Buy', order_type, 0, quantity, True, True)
+                            
+        return False, {}, ''
 
 if __name__ == '__main__':
     
@@ -167,8 +187,20 @@ if __name__ == '__main__':
     #myBybitFut = bybit_future(testing=False) #real
             
     
+    #short future
+    result, response, orderId = myBybitFut.short_token_usdt('BTC', 5, 100, order_type='Market')
+    print(result)
+    
     #long future
     result, response, orderId = myBybitFut.long_token_usdt('BTC', 5, 100, order_type='Market')
+    print(result)
+    
+    #close position where position_id = 1
+    result = myBybitFut.close_position(symbol='BTC', position_id=1, order_type='Market')
+    print(result)    
+    
+    #close position where position_id = 2
+    result = myBybitFut.close_position(symbol='BTC', position_id=2, order_type='Market')
     print(result)
     
     print('finished')
