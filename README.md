@@ -15,3 +15,7 @@
 (C) Note
 
 1) Added the new paramter symbol="BTC" in close_position(), as the position_id will be repeated for different symbols.
+
+(D) The trade results on my bybit testnet account
+
+![bybit_trade_samples](https://user-images.githubusercontent.com/75365123/223401584-738ca588-bf54-429b-9953-a5d498551fbd.png)
