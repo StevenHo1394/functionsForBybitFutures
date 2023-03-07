@@ -4,7 +4,7 @@
 
 1) short_token_usdt(symbol="BTC", leverage=5, collateral=100, order_type="market")
 2) long_token_usdt(symbol="BTC", leverage=5, collateral=100, order_type="market")
-3) close_position(position_id="ABC", "market")
+3) close_position(symbol="BTC", position_id="ABC", "market") (c.f. part C below)
 
 (B) Usage:
 
@@ -12,3 +12,6 @@
 2) Create your bybitFut instance by "bybitFut = bybit_future(testing=True)" if running on testnet, or "bybitFut = bybit_future(testing=False)" if running for real.
 3) Just call the functions from the bybitFut instance.
 
+(C) Note
+
+1) Added the new paramter symbol="BTC" in close_position(), as the position_id will be repeated for different symbols.
