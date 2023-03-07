@@ -9,6 +9,6 @@
 (B) Usage:
 
 1) Please input your testnet API keys to "keys/bybit_keys_test.key", and your real API keys to "bybit_keys_real.key".
-2) Create your bybitFut instance by "bybit_future(testing=True)" if running on testnet, or "bybit_future(testing=False)" if running for real.
+2) Create your bybitFut instance by "bybitFut = bybit_future(testing=True)" if running on testnet, or "bybitFut = bybit_future(testing=False)" if running for real.
 3) Just call the functions from the bybitFut instance.
 
