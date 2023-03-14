@@ -1,5 +1,8 @@
 # functionsForBybitFutures
 
+Part1: USDT futures
+===================
+
 (A) We create three functions to trade futures on Bybit as follows:
 
 1) short_token_usdt(symbol="BTC", leverage=5, collateral=100, order_type="market")
