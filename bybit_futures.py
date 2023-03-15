@@ -187,29 +187,23 @@ if __name__ == '__main__':
     
     myBybitFut = bybit_future(testing=True) #testnet
     #myBybitFut = bybit_future(testing=False) #real
-            
-    
-    # # short future
-    # result, response, orderId = myBybitFut.short_token_usdt('BTC', 5, 100, order_type='Market')
-    # print(result)
-    
-    # #long future
-    # result, response, orderId = myBybitFut.long_token_usdt('BTC', 5, 100, order_type='Market')
-    # print(result)
-    
-    # #close position where position_id = 1
-    # result = myBybitFut.close_position(symbol='BTC', position_id=1, order_type='Market')
-    # print(result)    
-    
-    # #close position where position_id = 2
-    # result = myBybitFut.close_position(symbol='BTC', position_id=2, order_type='Market')
-    # print(result)
-    
-    #myBybitFut.long_token_usdt(symbol="BTC", leverage=10, collateral=10000, order_type="Market")
-    
-    result, response, orderId = myBybitFut.short_token_usdt('APE', 5, 100, order_type='Market')
+                
+    # short future
+    result, response, orderId = myBybitFut.short_token_usdt('BTC', 5, 100, order_type='Market')
     print(result)
     
+    #long future
+    result, response, orderId = myBybitFut.long_token_usdt('BTC', 5, 100, order_type='Market')
+    print(result)
+    
+    #close position where position_id = 1
+    result = myBybitFut.close_position(symbol='BTC', position_id=1, order_type='Market')
+    print(result)    
+    
+    #close position where position_id = 2
+    result = myBybitFut.close_position(symbol='BTC', position_id=2, order_type='Market')
+    print(result)
+        
     print('finished')
     
     

@@ -158,33 +158,39 @@ class bybit_usdc_future:
             return False, leverage_response, ''
         
         #long the asset
-        return self.trade(asset, 'Buy', order_type, 0, trade_quantity)    
+        return self.trade(asset, 'Buy', order_type, 0, trade_quantity)   
     
     
-    def close_position(self, symbol="BTC", position_id="ABC", order_type='Market'):        
+    def my_position(self, **kwargs):
+        
+        suffix = "/option/usdc/openapi/private/v1/query-position"
+        
+        return self.session_auth._submit_request(
+            method="POST",
+            path=self.session_auth.endpoint + suffix,
+            query=kwargs,
+            auth=True
+        )
+    
+    
+    #position_id is not required as we cannot have both long and short positions for USDC futures
+    def close_position(self, symbol="BTC", order_type='Market'):        
         
         asset = symbol + 'PERP'
-        position_response = self.session_auth.open_interest(
-                                    symbol = asset, 
-                                    period = '5m')
-        
-        print(position_response)
-        
+        position_response = self.session_auth.my_position(category = 'PERPETUAL', symbol= 'APEPERP')
+                
         if ( 'retCode' in position_response ) and ( position_response['retCode'] == 0 ):
-            positions = position_response['result']
+            positions = position_response['result']['dataList']
             
             for position in positions:
-                if asset == position['data']['symbol'] :
-                    if position_id == position['data']['position_idx']:
-                        quantity = position['data']['size']
-                        
-                        print(asset)
-                        print(position_id)
-                        
-                        if 'Buy' == position['data']['side']:
-                            return self.trade(asset, 'Sell', order_type, 0, quantity, True, True)                        
-                        else:
-                            return self.trade(asset, 'Buy', order_type, 0, quantity, True, True)
+                
+                if asset == position['symbol'] :
+                    quantity = position['size']
+                                                
+                    if 'Buy' == position['side']:
+                        return self.trade(asset, 'Sell', order_type, 0, quantity, True, True)                        
+                    else:
+                        return self.trade(asset, 'Buy', order_type, 0, quantity, True, True)
                             
         return False, {}, ''
     
@@ -195,19 +201,19 @@ if __name__ == '__main__':
     myBybitUsdcFut = bybit_usdc_future(testing=True) #testnet
     #myBybitFut = bybit_usdc_future(testing=False) #real    
             
-    # # short USDC future
-    # result, response, orderId = myBybitUsdcFut.short_token_usdc('APE', 5, 100, order_type='Market')
-    # print(result)
-    
-    # long USDC future
-    # result, response, orderId = myBybitUsdcFut.long_token_usdc('APE', 5, 200, order_type='Market')
-    # print(result)
-    
-    #close position where position_id = 1
-    result = myBybitUsdcFut.close_position(symbol='APE', position_id=2, order_type='Market')
+    # short USDC future
+    result, response, orderId = myBybitUsdcFut.short_token_usdc('APE', 5, 100, order_type='Market')
     print(result)
     
-
+    # long USDC future
+    result, response, orderId = myBybitUsdcFut.long_token_usdc('APE', 5, 200, order_type='Market')
+    print(result)
+    
+    # close position
+    result = myBybitUsdcFut.close_position(symbol='APE', order_type='Market')
+    print(result)
+    
+    
 
 
         
