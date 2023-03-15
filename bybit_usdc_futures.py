@@ -86,6 +86,36 @@ class bybit_usdc_future:
         
         return float(minTradeQty)
     
+    
+    def trade(self, asset, side, typ, price, quan, reduce_only=False, close_on_trigger=False):   
+        
+        result = False  
+        response = {}
+        orderId = ''
+        
+        try:
+            response = self.session_auth.place_active_order(
+                symbol = asset,
+                orderType = typ,
+                orderFilter = 'Order',
+                side = side,
+                orderPrice = str(price), 
+                orderQty = str(quan),
+                timeInForce='GoodTillCancel',
+                reduceOnly = reduce_only,
+                closeOnTrigger = close_on_trigger
+            )
+                                
+            if ( response['retCode'] == 0 ):
+                orderId = response['result']['orderId']
+                print("bybit_usdc_future.trade(), response = " + str(response) )
+                result = True
+        
+        except Exception as e:
+            print("bybit_usdc_future.trade(), Exception = " + str(e))
+        
+        return result, response, orderId
+    
 if __name__ == '__main__':
     
     #============================== Future ======================================
@@ -95,11 +125,10 @@ if __name__ == '__main__':
     
     # result = myBybitUsdcFut.get_min_trade_qty('BTCPERP')
     # print(result)
-    
-    result = myBybitUsdcFut.set_leverage('BTCPERP', 20)
+        
+    result = myBybitUsdcFut.trade('BTCPERP', 'Sell', 'Market', 0, 0.001)
     print(result)
-    
-    #fixme: incomplete
-    #myBybitUsdcFut.trade('BTC-PERP', 'Sell', 'Market', 0, 0.001)
+
+
 
         
