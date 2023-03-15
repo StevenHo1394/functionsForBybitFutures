@@ -46,6 +46,27 @@ class bybit_usdc_future:
         self.set_test_env(testing) 
         
         
+    def set_leverage(self, asset, leverage):    
+        result = False
+        response = {}        
+        
+        try:
+            response = self.session_auth.set_leverage(symbol=asset, 
+                                                      leverage=str(leverage))
+            print(response)
+            
+            if ( 'ret_code' in response ) and ( response['ret_code'] == 0 ):
+                result = True
+        
+        except Exception as e:
+            print("bybit_usdc_future.setLeverage(), Exception = " + str(e))
+            
+            if 'ErrCode: 34036' in response:
+                print("bybit_usdc_future.setLeverage(), leverage not modified!")
+                result = True
+                    
+        return result, response
+    
     def get_min_trade_qty(self, asset):
         minTradeQty = -1
         
@@ -72,7 +93,10 @@ if __name__ == '__main__':
     myBybitUsdcFut = bybit_usdc_future(testing=True) #testnet
     #myBybitFut = bybit_usdc_future(testing=False) #real    
     
-    result = myBybitUsdcFut.get_min_trade_qty('BTCPERP')
+    # result = myBybitUsdcFut.get_min_trade_qty('BTCPERP')
+    # print(result)
+    
+    result = myBybitUsdcFut.set_leverage('BTCPERP', 20)
     print(result)
     
     #fixme: incomplete

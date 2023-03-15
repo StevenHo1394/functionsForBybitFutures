@@ -40,6 +40,7 @@ class bybit_future:
         self.session_auth = usdt_perpetual.HTTP(endpoint=self.BASE_URL, api_key=self.PKEY, api_secret=self.SKEY)        
         return
     
+    
     def __init__(self, testing):                
         self.set_test_env(testing) 
 
@@ -59,11 +60,12 @@ class bybit_future:
         except Exception as e:
             print("bybit_future.setLeverage(), Exception = " + str(e))
             
-            if 'leverage not modified' or 'ErrCode: 34036' in response:
+            if 'ErrCode: 34036' in response:
                 print("bybit_future.setLeverage(), leverage not modified!")
                 result = True
                     
         return result, response
+    
     
     def trade(self, asset, side, typ, price, quan, reduce_only=False, close_on_trigger=False):   
         
@@ -78,6 +80,7 @@ class bybit_future:
                 order_type = typ,
                 qty = quan,
                 price = price,
+                #position_idx = 0, #"single mode only"
                 time_in_force="GoodTillCancel",
                 reduce_only=reduce_only,
                 close_on_trigger=close_on_trigger
@@ -95,6 +98,7 @@ class bybit_future:
         
         return result, response, orderId
     
+    
     def get_price(self, asset):
         price = -1
         
@@ -108,6 +112,7 @@ class bybit_future:
             print("bybit_future.get_price(), Exception = " + str(e))            
         
         return float(price)
+    
     
     def get_trade_quantity(self, asset, collateral, leverage):        
         price = self.get_price(asset)
@@ -187,20 +192,25 @@ if __name__ == '__main__':
     #myBybitFut = bybit_future(testing=False) #real
             
     
-    #short future
-    result, response, orderId = myBybitFut.short_token_usdt('BTC', 5, 100, order_type='Market')
-    print(result)
+    # # short future
+    # result, response, orderId = myBybitFut.short_token_usdt('BTC', 5, 100, order_type='Market')
+    # print(result)
     
-    #long future
-    result, response, orderId = myBybitFut.long_token_usdt('BTC', 5, 100, order_type='Market')
-    print(result)
+    # #long future
+    # result, response, orderId = myBybitFut.long_token_usdt('BTC', 5, 100, order_type='Market')
+    # print(result)
     
-    #close position where position_id = 1
-    result = myBybitFut.close_position(symbol='BTC', position_id=1, order_type='Market')
-    print(result)    
+    # #close position where position_id = 1
+    # result = myBybitFut.close_position(symbol='BTC', position_id=1, order_type='Market')
+    # print(result)    
     
-    #close position where position_id = 2
-    result = myBybitFut.close_position(symbol='BTC', position_id=2, order_type='Market')
+    # #close position where position_id = 2
+    # result = myBybitFut.close_position(symbol='BTC', position_id=2, order_type='Market')
+    # print(result)
+    
+    #myBybitFut.long_token_usdt(symbol="BTC", leverage=10, collateral=10000, order_type="Market")
+    
+    result, response, orderId = myBybitFut.short_token_usdt('APE', 5, 100, order_type='Market')
     print(result)
     
     print('finished')
