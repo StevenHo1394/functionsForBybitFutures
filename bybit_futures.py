@@ -60,7 +60,7 @@ class bybit_future:
         except Exception as e:
             print("bybit_future.setLeverage(), Exception = " + str(e))
             
-            if 'ErrCode: 34036' in response:
+            if 'ErrCode: 34036' in str(e):
                 print("bybit_future.setLeverage(), leverage not modified!")
                 result = True
                     
@@ -139,7 +139,7 @@ class bybit_future:
         leverage_result, leverage_response = self.set_leverage(asset, leverage)
             
         if not leverage_result:
-            print("bybit_future.long_token_usdt(), leverage_result =" + str(leverage_result))
+            print("bybit_future.short_token_usdt(), leverage_result =" + str(leverage_result))
             return False, leverage_response, ''
                 
         #short the asset
@@ -173,10 +173,7 @@ class bybit_future:
                 if asset == position['data']['symbol'] :
                     if position_id == position['data']['position_idx']:
                         quantity = position['data']['size']
-                        
-                        print(asset)
-                        print(position_id)
-                        
+                                                
                         if 'Buy' == position['data']['side']:
                             return self.trade(asset, 'Sell', order_type, 0, quantity, True, True)                        
                         else:

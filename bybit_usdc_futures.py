@@ -61,31 +61,12 @@ class bybit_usdc_future:
         except Exception as e:
             print("bybit_usdc_future.setLeverage(), Exception = " + str(e))
             
-            if 'ErrCode: 34036' in response:
+            if 'ErrCode: 34036' in str(e):
                 print("bybit_usdc_future.setLeverage(), leverage not modified!")
                 result = True
                     
         return result, response
-    
-    def get_min_trade_qty(self, asset):
-        minTradeQty = -1
         
-        try:
-            response = self.session_unauth.query_symbol(symbol=asset, limit = 1)
-            
-            if ( 'retCode' in response ) and ( response['retCode'] == 0 ):
-                
-                results = response['result']
-                for result in results:
-                    if asset == result['symbol']:
-                        minTradeQty = response['result'][0]['minTradingQty']
-                        break
-            
-        except Exception as e:
-            print("bybit_usdc_future.get_min_trade_qty(), Exception = " + str(e))            
-        
-        return float(minTradeQty)
-    
     
     def trade(self, asset, side, typ, price, quan, reduce_only=False, close_on_trigger=False):   
         
@@ -117,22 +98,21 @@ class bybit_usdc_future:
         return result, response, orderId
     
     
-    #fixme:incomplete
     def get_price(self, asset):
         price = -1
         
         try:
-            response = self.session_unauth.public_trading_records(symbol=asset, limit = 1)
+            response = self.session_unauth.latest_information_for_symbol(symbol = asset)
             
             if ( 'retCode' in response ) and ( response['retCode'] == 0 ):
-                price = response['result'][0]['price']
+                price = response['result']['markPrice']
             
         except Exception as e:
             print("bybit_usdc_future.get_price(), Exception = " + str(e))            
         
         return float(price)
     
-    #fixme:incomplete
+    
     def get_trade_quantity(self, asset, collateral, leverage):        
         price = self.get_price(asset)
         
@@ -158,11 +138,55 @@ class bybit_usdc_future:
         leverage_result, leverage_response = self.set_leverage(asset, leverage)
             
         if not leverage_result:
-            print("bybit_usdc_future.long_token_usdt(), leverage_result =" + str(leverage_result))
+            print("bybit_usdc_future.short_token_usdc(), leverage_result =" + str(leverage_result))
             return False, leverage_response, ''
                 
         #short the asset
         return self.trade(asset, 'Sell', order_type, 0, trade_quantity)
+    
+    
+    def long_token_usdc(self, symbol="BTC", leverage=5, collateral=100, order_type='Market'): 
+        
+        asset = symbol + 'PERP'
+        trade_quantity = self.get_trade_quantity(asset, collateral, leverage)
+        
+        #set leverage
+        leverage_result, leverage_response = self.set_leverage(asset, leverage)        
+            
+        if not leverage_result:
+            print("bybit_usdc_future.long_token_usdc(), leverage_result =" + str(leverage_result))
+            return False, leverage_response, ''
+        
+        #long the asset
+        return self.trade(asset, 'Buy', order_type, 0, trade_quantity)    
+    
+    
+    def close_position(self, symbol="BTC", position_id="ABC", order_type='Market'):        
+        
+        asset = symbol + 'PERP'
+        position_response = self.session_auth.open_interest(
+                                    symbol = asset, 
+                                    period = '5m')
+        
+        print(position_response)
+        
+        if ( 'retCode' in position_response ) and ( position_response['retCode'] == 0 ):
+            positions = position_response['result']
+            
+            for position in positions:
+                if asset == position['data']['symbol'] :
+                    if position_id == position['data']['position_idx']:
+                        quantity = position['data']['size']
+                        
+                        print(asset)
+                        print(position_id)
+                        
+                        if 'Buy' == position['data']['side']:
+                            return self.trade(asset, 'Sell', order_type, 0, quantity, True, True)                        
+                        else:
+                            return self.trade(asset, 'Buy', order_type, 0, quantity, True, True)
+                            
+        return False, {}, ''
     
 if __name__ == '__main__':
     
@@ -170,14 +194,19 @@ if __name__ == '__main__':
     
     myBybitUsdcFut = bybit_usdc_future(testing=True) #testnet
     #myBybitFut = bybit_usdc_future(testing=False) #real    
+            
+    # # short USDC future
+    # result, response, orderId = myBybitUsdcFut.short_token_usdc('APE', 5, 100, order_type='Market')
+    # print(result)
     
-    result = myBybitUsdcFut.set_leverage('BTCPERP', 5)
+    # long USDC future
+    # result, response, orderId = myBybitUsdcFut.long_token_usdc('APE', 5, 200, order_type='Market')
+    # print(result)
+    
+    #close position where position_id = 1
+    result = myBybitUsdcFut.close_position(symbol='APE', position_id=2, order_type='Market')
     print(result)
     
-    # result = myBybitUsdcFut.get_min_trade_qty('BTCPERP')
-    # print(result)
-        
-
 
 
 
