@@ -84,14 +84,11 @@ class bybit_future:
                 time_in_force="GoodTillCancel",
                 reduce_only=reduce_only,
                 close_on_trigger=close_on_trigger
-            )
-            
-            print(response)
+            )            
                     
             if ( response['ret_code'] == 0 ) and ( response['ext_code'] == "" ):
-                result = True
                 orderId = response['result']['order_id']
-                print("bybit_future.trade(), response = " + str(response) )
+                result = True
         
         except Exception as e:
             print("bybit_future.trade(), Exception = " + str(e))

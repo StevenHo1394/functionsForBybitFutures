@@ -6,6 +6,7 @@ Created on Wed Mar 15 01:07:09 2023
 """
 
 import os
+import time
 import configparser
 from pybit import usdc_perpetual
 
@@ -58,17 +59,17 @@ class bybit_usdc_future:
             if ( 'retCode' in response ) and ( response['retCode'] == 0 ):
                 result = True
         
-        except Exception as e:
-            print("bybit_usdc_future.setLeverage(), Exception = " + str(e))
+        except Exception as e:            
             
             if 'ErrCode: 34036' in str(e):
-                print("bybit_usdc_future.setLeverage(), leverage not modified!")
                 result = True
+            else:
+                print("bybit_usdc_future.setLeverage(), Exception = " + str(e))
                     
         return result, response
         
     
-    def trade(self, asset, side, typ, price, quan, reduce_only=False, close_on_trigger=False):   
+    def trade(self, asset, side, typ, price, quan, order_filter = 'Order', reduce_only=False, close_on_trigger=False):   
         
         result = False  
         response = {}
@@ -78,7 +79,7 @@ class bybit_usdc_future:
             response = self.session_auth.place_active_order(
                 symbol = asset,
                 orderType = typ,
-                orderFilter = 'Order',
+                orderFilter = order_filter,
                 side = side,
                 orderPrice = str(price), 
                 orderQty = str(quan),
@@ -89,7 +90,6 @@ class bybit_usdc_future:
                                 
             if ( 'retCode' in response ) and ( response['retCode'] == 0 ):
                 orderId = response['result']['orderId']
-                print("bybit_usdc_future.trade(), response = " + str(response) )
                 result = True
         
         except Exception as e:
@@ -177,20 +177,27 @@ class bybit_usdc_future:
     def close_position(self, symbol="BTC", order_type='Market'):        
         
         asset = symbol + 'PERP'
-        position_response = self.session_auth.my_position(category = 'PERPETUAL', symbol= 'APEPERP')
-                
-        if ( 'retCode' in position_response ) and ( position_response['retCode'] == 0 ):
-            positions = position_response['result']['dataList']
+        
+        try:
+            time.sleep(1) #sleep for 1 seond to ensure that we get the latest position
             
-            for position in positions:
+            position_response = self.session_auth.my_position(category = 'PERPETUAL', symbol = asset)
+                    
+            if ( 'retCode' in position_response ) and ( position_response['retCode'] == 0 ):
+                positions = position_response['result']['dataList']
                 
-                if asset == position['symbol'] :
-                    quantity = position['size']
-                                                
-                    if 'Buy' == position['side']:
-                        return self.trade(asset, 'Sell', order_type, 0, quantity, True, True)                        
-                    else:
-                        return self.trade(asset, 'Buy', order_type, 0, quantity, True, True)
+                for position in positions:
+                    
+                    if asset == position['symbol'] :
+                        quantity = abs(float(position['size']))
+                                                    
+                        if 'Buy' == position['side']:
+                            return self.trade(asset, 'Sell', order_type, 0, quantity, 'StopOrder', True, True)                        
+                        else:
+                            return self.trade(asset, 'Buy', order_type, 0, quantity, 'StopOrder', True, True)
+                        
+        except Exception as e:
+            print("bybit_usdc_future.close_position(), Exception = " + str(e))                            
                             
         return False, {}, ''
     
@@ -203,15 +210,17 @@ if __name__ == '__main__':
             
     # short USDC future
     result, response, orderId = myBybitUsdcFut.short_token_usdc('APE', 5, 100, order_type='Market')
-    print(result)
+    print("short_token_usdc, result = " + str(result))
     
     # long USDC future
     result, response, orderId = myBybitUsdcFut.long_token_usdc('APE', 5, 200, order_type='Market')
-    print(result)
-    
+    print("long_token_usdc, result = " + str(result))
+        
     # close position
-    result = myBybitUsdcFut.close_position(symbol='APE', order_type='Market')
-    print(result)
+    result, response, orderId = myBybitUsdcFut.close_position(symbol='APE', order_type='Market')
+    print("close_position, result = " + str(result))
+    
+    
     
     
 
