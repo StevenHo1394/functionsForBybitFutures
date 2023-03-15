@@ -32,4 +32,4 @@ Part2: USDC futures (bybit_usdc_futures.py)
 2) long_token_usdt(symbol="BTC", leverage=5, collateral=100, order_type="Market")
 3) close_position(symbol="BTC", position_id="ABC", "Market") 
 
-Note: For 'BTC-PERP', the symbol name in API is 'BTCPERP'
+Note: For 'BTC-PERP', the symbol name in API is 'BTCPERP'. This has been taken care of in the code already.
