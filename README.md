@@ -30,6 +30,20 @@ Part2: USDC futures (bybit_usdc_futures.py)
 
 1) short_token_usdt(symbol="BTC", leverage=5, collateral=100, order_type="Market")
 2) long_token_usdt(symbol="BTC", leverage=5, collateral=100, order_type="Market")
-3) close_position(symbol="BTC", position_id="ABC", "Market") 
+3) close_position(symbol="BTC", "Market") (c.f. part C below)
 
 Note: For 'BTC-PERP', the symbol name in API is 'BTCPERP'. This has been taken care of in the code already.
+
+(B) Usage:
+
+Please input your testnet API keys to "keys/bybit_keys_test.key", and your real API keys to "bybit_keys_real.key".
+Create your bybitFut instance by "bybitFut = bybit_future(testing=True)" if running on testnet, or "bybitFut = bybit_future(testing=False)" if running for real.
+Just call the functions from the bybitFut instance.
+
+(C) Note
+
+We cannot hold both long and short positions for USDC futures at the same time, so position_id is not needed.
+
+(D) The trade results on my bybit testnet account
+
+
