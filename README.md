@@ -5,9 +5,9 @@ Part1: USDT futures (bybit_futures.py)
 
 (A) We create three functions to trade futures on Bybit as follows:
 
-1) short_token_usdt(symbol="BTC", leverage=5, collateral=100, order_type="market")
-2) long_token_usdt(symbol="BTC", leverage=5, collateral=100, order_type="market")
-3) close_position(symbol="BTC", position_id="ABC", "market") (c.f. part C below)
+1) short_token_usdt(symbol="BTC", leverage=5, collateral=100, order_type="Market")
+2) long_token_usdt(symbol="BTC", leverage=5, collateral=100, order_type="Market")
+3) close_position(symbol="BTC", position_id="ABC", "Market") (c.f. part C below)
 
 (B) Usage:
 
@@ -28,6 +28,6 @@ Part2: USDC futures (bybit_usdc_futures.py)
 
 (A) We create three functions to trade USDC futures on Bybit as follows:
 
-1) short_token_usdt(symbol="BTC", leverage=5, collateral=100, order_type="market")
-2) long_token_usdt(symbol="BTC", leverage=5, collateral=100, order_type="market")
-3) close_position(symbol="BTC", position_id="ABC", "market") 
+1) short_token_usdt(symbol="BTC", leverage=5, collateral=100, order_type="Market")
+2) long_token_usdt(symbol="BTC", leverage=5, collateral=100, order_type="Market")
+3) close_position(symbol="BTC", position_id="ABC", "Market") 
