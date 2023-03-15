@@ -1,7 +1,7 @@
 # functionsForBybitFutures
 
-Part1: USDT futures
-===================
+Part1: USDT futures (bybit_futures.py)
+======================================
 
 (A) We create three functions to trade futures on Bybit as follows:
 
@@ -23,5 +23,5 @@ Part1: USDT futures
 
 ![bybit_trade_samples](https://user-images.githubusercontent.com/75365123/223401584-738ca588-bf54-429b-9953-a5d498551fbd.png)
 
-Part2: USDC futures
-===================
+Part2: USDC futures (bybit_usdc_futures.py)
+===========================================
